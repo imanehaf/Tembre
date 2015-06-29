@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+Author: Imane
 
-This is a temporary script file.
 """
 from os.path import join, isfile
 from os import listdir
