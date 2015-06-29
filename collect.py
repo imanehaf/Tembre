@@ -57,7 +57,7 @@ def zsimCall(src, exe_files, cfg_file):
         sp.call('rm modif.cfg', shell=True)
         with open('modif.cfg', 'w') as mf:            
             mf.write(t)
-        cmd = './../zsim/build/opt/zsim modif.cfg' 
+        cmd = './../../zsim/build/opt/zsim modif.cfg' 
         print 'Executing ZSim for the exe : %s' % (exe)
         sp.call(cmd, shell=True)
         
