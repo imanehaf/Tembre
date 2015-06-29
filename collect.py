@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Author: Imane
+Created on Fri Jun 22 13:57:39 2015
 
+@author: imanies
 """
+
 from os.path import join, isfile
 from os import listdir
 import subprocess as sp
 import h5py # presents HDF5 files as numpy arrays
+
 
 def main(src, cfg_f):
     exe_files = [ f for f in listdir(src) if isfile(join(src,f)) ]
