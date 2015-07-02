@@ -3,6 +3,7 @@
 Created on Fri Jun 26 16:37:09 2015
 
 @author: imanies
+
 """
 
 import matplotlib.pyplot as pl
@@ -24,16 +25,25 @@ def main(src, cfg_h, cfg_t): #src is path to executables
     return hData, tData
 
 def display(data):
-    pd = np.array(data[1].values())
-    zd = np.array(data[0].values())
+    td = np.array(data[1].values())
+    hd = np.array(data[0].values())
     regr = linear_model.LinearRegression()
     
-    zd_x = zd[:, np.newaxis]
-    pd_x = pd[:, np.newaxis]
+    hd_x = hd[:, np.newaxis]
+    td_x = td[:, np.newaxis]
 
-    regr.fit(pd_x, zd_x)
+    regr.fit(hd_x, td_x)
     
-    pl.scatter(pd, zd,  color='black')
-    pl.plot(pd_x, regr.predict(pd_x), color='red', linewidth=2)
+    pl.scatter(hd, td,  color='black')
+    pl.plot(hd_x, regr.predict(hd_x), color='red', linewidth=2)
     
     pl.show()
+    
+    
+    '''
+    for key, value in d[0].items():
+        d[0][key] = value / 1400
+
+    for key, value in d[1].items():
+        d[1][key] = value / 2270
+    '''
