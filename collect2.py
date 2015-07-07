@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Jun 22 13:57:39 2015
+
 @author: imanies
 """
 
@@ -19,6 +20,7 @@ def perfCycles(src, exe_files):
         cmd = '3>>res.txt perf stat --repeat 20 -e cycles:u --log-fd 3 ./%s/%s >> res.txt' % (src,exe)
         print 'Executing the perf cmd for exe : ' + exe
         sp.call(cmd, shell=True)
+
 def perfCall(src, exe_files):
     perfCycles(src, exe_files)
     with open('res.txt','r') as f:
@@ -26,6 +28,9 @@ def perfCall(src, exe_files):
     t = [ff.split('cycles')[0].strip(' ').replace(',','') for ff in fil.split(':\n\n')][1::]
     ETs = [float(tt) for tt in t]
     return dict(zip(exe_files, ETs))
+    
+    with open('file.txt', 'r') as f:
+    exe = [line.strip() for line in f]
     '''
     
 
@@ -36,7 +41,7 @@ def perfCall(src, exe_files):
             
             with open(cfg_file, 'r') as f:
                 fil = f.read()
-            t=fil.split('command = ',1)[0] + 'command = "./'+join(src,exe)+\
+            t=fil.split('command = ',1)[0] + 'command = "'+exe+\
                 '";\n};' +fil.split('command = ',1)[1].split('";\n};',1)[1]
             sp.call('rm modif.cfg', shell=True)
             with open('modif.cfg', 'w') as mf:            
@@ -61,3 +66,4 @@ def perfCall(src, exe_files):
         dset = f["stats"]["root"]
         procCycles = dset[-1]['procCycles'][0]
         return procCycles
+        
