@@ -8,10 +8,10 @@ import xml.etree.ElementTree as ET
 import re
 import collect
 from os.path import join, isfile
-from os import listdir
+from os import listdir, curdir
 
 def main(src, cfg, param): #src is path to executables
-    exe_files = [ f for f in listdir(src) if isfile(join(src,f)) ]
+    exe_files = [ f for f in listdir(src) if isfile(join(curdir, src,f)) ]
     host = collect.Collect()
     t=cfg2xml(cfg )
     
@@ -74,6 +74,7 @@ def cfg2xml(cfg, xml=None):
     li=[]
     with open(cfg, 'r+') as f:
         for line in f:
+            
             txt = re.split('\W+', line.strip())
             if re.search('{', line):
                 child = txt[0]
@@ -84,11 +85,11 @@ def cfg2xml(cfg, xml=None):
                 cell.attrib[txt[0]] = txt[1]
             elif re.search('}', line):
                 cell = li[-1][0]
+                parent = cell
                 li.remove(li[-1])
-                if li:
-                    parent = li[-1][0]
-                else:
+                if not li:
                     parent = root
+                    
     for cell in root.iter('l2'):
             cell.attrib['children'] = 'l1i|l1d'    
     tree = ET.ElementTree(root)
