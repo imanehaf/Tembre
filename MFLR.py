@@ -13,22 +13,19 @@ from os import listdir
 def main(src, cfg, param): #src is path to executables
     exe_files = [ f for f in listdir(src) if isfile(join(src,f)) ]
     host = collect.Collect()
-    cfg2xml(cfg, 'ref.xml')
-    modifyXml('ref.xml', param)    
-    xml2cfg('ref.xml', 'arch.cfg')
+    t=cfg2xml(cfg )
     
-    hData = host.zsimCall(src, exe_files, 'host.cfg')
+    t= modifyXml(t, param)    
+    xml2cfg(t, 'arch.cfg')
+    
+    hData = host.zsimCall(src, exe_files, 'arch.cfg')
 
     return hData
     
-def modifyXml(xml, parameters, addParam=None):
+def modifyXml(tree, parameters, addParam=None):
     #parameters = [[cell, att, value]]
     #addParam = [parent*n, child, att]
 #np.random.choice(l, size=(10))
-    
-    
-    tree = ET.parse(xml)
-        
     
     root = tree.getroot()
     if addParam:
@@ -41,34 +38,29 @@ def modifyXml(xml, parameters, addParam=None):
         for elem in root.iter(param[0]):
             elem.attrib[param[1]]=param[2]
     
-    if xml:    
-        tree.write(xml, encoding='utf-8', xml_declaration=True)
+    
     return tree
     
     
-def xml2cfg(xml, cfg):
-    if type(xml) == 'xml.etree.ElementTree.ElementTree'    :
-        tree = xml
-    else:
-        tree = ET.parse(xml)
-        
+def xml2cfg(tree, cfg):
     root = tree.getroot()
     with open(cfg, 'w') as f:
         for child in root:
             f.write(child.tag + ' = { \n')
             for key, value in child.attrib.items():
-                f.write(key + ' = '+value +';\n')
+                try: 
+                    f.write(key + ' = '+str(int(value)) +';\n') 
+                except:
+                    f.write(key + ' = "'+str(value)+'";\n')
             for cores in child:
                 f.write(cores.tag + ' = { \n')
                 for core in cores:
                     f.write(core.tag + ' = { \n')
                     for key, value in core.attrib.items():
-                        print str(value)+ 'type: '+str(type(value))
-                        f.write(key + ' = '+(value) +';\n') 
-                        '''   
+                        try: 
+                            f.write(key + ' = '+str(int(value)) +';\n') 
                         except:
-                            print value+ ': exception'
-                            f.write(key + ' = "'+value +'";\n')'''
+                            f.write(key + ' = "'+str(value)+'";\n')
                     f.write('};\n')
                 f.write('};\n')
             f.write('};\n') 
@@ -97,7 +89,8 @@ def cfg2xml(cfg, xml=None):
                     parent = li[-1][0]
                 else:
                     parent = root
-                
+    for cell in root.iter('l2'):
+            cell.attrib['children'] = 'l1i|l1d'    
     tree = ET.ElementTree(root)
     if xml:    
         tree.write(xml, encoding='utf-8', xml_declaration=True)
