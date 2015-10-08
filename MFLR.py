@@ -61,6 +61,15 @@ def xml2cfg(tree, cfg):
                             f.write(key + ' = '+str(int(value)) +';\n') 
                         except:
                             f.write(key + ' = "'+str(value)+'";\n')
+                    for things in core:
+                        print things
+                        f.write(things.tag + ' = { \n')
+                        for key, value in things.attrib.items():
+                            try: 
+                                f.write(key + ' = '+str(int(value)) +';\n') 
+                            except:
+                                f.write(key + ' = "'+str(value)+'";\n')
+                        f.write('};\n')
                     f.write('};\n')
                 f.write('};\n')
             f.write('};\n') 
