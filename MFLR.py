@@ -14,24 +14,29 @@ import subprocess as sp
 import h5py
 
 def main(src, nbEx):
-    header = [ 'Lc', 'Hz', 'SzL1d', 'SzL1i','SzL2', 'AsL1d', 'AsL1i',
-              'AsL2', 'WsL1d', 'WsL1i','WsL2', 'RepL1d', 'RepL1i','RepL2',
+    header = [ 'Lc', 'Hz', 'SzL1d', 'SzL1i','SzL2', 'WsL1d', 'WsL1i','WsL2', 
               'LatL1d', 'LatL1i', 'LatL2', 'bench', 'ET']
     df = pd.DataFrame(columns=header)
     pararch = generateArch(nbEx)
     i=0
     for params in pararch:
         i+=1
+        j=20-1
         param = formatParam(params)
         archdir = 'arch'+str(i)
         oneRun(src, param, archdir)
         for fil in listdir(join('results', archdir)):
-            data = zsimCycles(fil)
-            df.loc[i] = params.extend([fil, data])
+            path = join('results', archdir, fil)
+            data = zsimCycles(path)
+            pos = 20*i-j
+            dum = list(params)
+            dum.extend([fil, data])
+            df.loc[pos] = dum
+            j-=1
     return df
     
 def oneRun(src, param, archdir): #src is path to executables
-    print '++++++ Architecture configuration: '+archdir+' ++++++'
+    print '\n++++++ Architecture configuration: '+archdir+' ++++++'
     exe_files = [ f for f in listdir(src) if isfile(join(curdir, src,f)) ]
     t=cfg2xml('ref.cfg' )
     t= modifyXml(t, param)    
@@ -96,11 +101,9 @@ def generateArch(nbEx):
     Hz = [1400, 2300, 3400]
     Sz = [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 524288,
           1048576, 2097152]
-    As = ['Direct', 'SetAssoc']
-    Ws = [1, 2, 4, 8, 16, 32, 64, 128]
+    Ws = [ 2, 4, 8, 16, 32, 64, 128]
     Lat = [10, 20, 30, 40, 50]
-    Rep = ['LRU', 'Random']
-    header = [Lc, Hz, Sz, As, Ws, Rep, Lat]
+    header = [Lc, Hz, Sz, Ws,  Lat]
     t = [[2]*nbEx]
     t.append(np.random.choice(Hz, size=(nbEx)))
     for feat in header[2:]:
@@ -118,12 +121,10 @@ def formatParam(arch):
     atts = ['frequency', 'size', 'latency', 'ways', 'type']
     
     param = [[cells[0], atts[0], arch[1]]]
-    for cache, sz, lat in zip(cells[1:4], arch[2:5], arch[-3:]):
+    for cache, sz, lat in zip(cells[1:4], sorted(arch[2:5]), sorted(arch[-3:])):
         param.append([cache, atts[1], sz])
         param.append([cache, atts[2], lat])
-    param.append([cells[-2], atts[-2], (arch[8:11])])
-    param.append([cells[-2], atts[-1], (arch[5:8])])
-    param.append([cells[-1], atts[-1], (arch[11:14])])
+    param.append([cells[-2], atts[-2], (arch[5:8])])
     return param
             
             
@@ -148,11 +149,11 @@ def modifyXml(tree, parameters, addParam=None):
     for param in parameters:
         i=0
         for elem in root.iter(param[0]):
-            if len(param[2])!=3:
-                elem.attrib[param[1]]=param[2]
-            else:
+            if type(param[2])==list:
                 elem.attrib[param[1]]=param[2][i]
                 i+=1
+            else:
+                elem.attrib[param[1]]=param[2]
     
     
     return tree
