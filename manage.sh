@@ -7,7 +7,7 @@ cd $di
 mkdir $2
 cd $2
 mkdir $1
-mv ../../zsim-ev.h5 $1/$1.h5
+mv ../../zsim-ev.h5 $1/zsim-ev.h5
 cp ../../modif.cfg $1/$1.cfg
 cd $root
-rm *.h5 modif.cfg 
+rm *.h5 modif.cfg *~

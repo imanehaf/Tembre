@@ -30,10 +30,10 @@ def main(src, nbEx):
         try:
             oneRun(src, param, archdir)
         except:
-            print 'something wrong with ' +archdir
+            print '\n ERROR: something wrong with ' +archdir
             cmd = 'mv arch.cfg  results/%s.cfg'%(archdir)
             sp.call(cmd, shell=True)
-            continue
+            break
         with open(join('results/', archdir+'.csv'), 'wb') as f:
             wr = csv.writer(f, quoting=csv.QUOTE_ALL)
             wr.writerow(archdir)
@@ -47,7 +47,7 @@ def main(src, nbEx):
             dum.extend([fil, data])
             df.loc[pos] = dum
             j-=1
-    df.to_pickle('results/'+nbEx+'_arch.pickle')
+    df.to_pickle('results/'+str(nbEx)+'_arch.pickle')
     return df
     
 def oneRun(src, param, archdir): #src is path to executables
