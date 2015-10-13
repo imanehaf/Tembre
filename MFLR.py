@@ -109,7 +109,11 @@ def generateArch(nbEx):
     for feat in header[2:]:
         for i in range(0,3):
             t.append(np.random.choice(feat, size=(nbEx)))
-    
+        dum = t[-3:]
+        dum=np.swapaxes(np.matrix(np.array(dum)),0,1)
+        dum.sort()
+        dum=np.swapaxes(np.matrix(np.array(dum)),0,1).tolist()
+        t[-3:]=dum           
     return np.swapaxes(np.matrix(t),0,1).tolist()
     
 def getResults(src, ):
