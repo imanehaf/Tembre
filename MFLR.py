@@ -12,6 +12,7 @@ from os.path import join, isfile
 from os import listdir, curdir
 import subprocess as sp
 import h5py
+import csv
 
 def main(src, nbEx):
     header = [ 'Lc', 'Hz', 'SzL1d', 'SzL1i','SzL2', 'WsL1d', 'WsL1i','WsL2', 
@@ -19,12 +20,25 @@ def main(src, nbEx):
     df = pd.DataFrame(columns=header)
     pararch = generateArch(nbEx)
     i=0
+    cmd = 'rm -r results/*'
+    sp.call(cmd, shell=True)
     for params in pararch:
         i+=1
         j=20-1
         param = formatParam(params)
         archdir = 'arch'+str(i)
-        oneRun(src, param, archdir)
+        try:
+            oneRun(src, param, archdir)
+        except:
+            print 'something wrong with ' +archdir
+            cmd = 'mv arch.cfg  results/%s.cfg'%(archdir)
+            sp.call(cmd, shell=True)
+            continue
+        with open(join('results/', archdir+'.csv'), 'wb') as f:
+            wr = csv.writer(f, quoting=csv.QUOTE_ALL)
+            wr.writerow(archdir)
+            for p in param:
+                wr.writerow(p)
         for fil in listdir(join('results', archdir)):
             path = join('results', archdir, fil)
             data = zsimCycles(path)
@@ -33,6 +47,7 @@ def main(src, nbEx):
             dum.extend([fil, data])
             df.loc[pos] = dum
             j-=1
+    df.to_pickle('results/'+nbEx+'_arch.pickle')
     return df
     
 def oneRun(src, param, archdir): #src is path to executables
@@ -90,8 +105,6 @@ def collectData(src, exe_files, cfg_file, arch):
             cmd = 'bash manage.sh %s %s'%(exe, arch) 
             sp.call(cmd, shell=True)
             
-            
-                       
         #df=pd.DataFrame([zdata[0]]).append(pd.DataFrame([zdata[1]])).transpose()
         return 
 
@@ -99,7 +112,7 @@ def generateArch(nbEx):
     #generates parameters for nbEx number of architectures
     Lc =[2,3]
     Hz = [1400, 2300, 3400]
-    Sz = [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 524288,
+    Sz = [2048, 4096, 8192, 16384, 32768, 65536, 131072, 524288,
           1048576, 2097152]
     Ws = [ 2, 4, 8, 16, 32, 64, 128]
     Lat = [10, 20, 30, 40, 50]
