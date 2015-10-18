@@ -16,10 +16,11 @@ import csv
 from sklearn import linear_model
 
 '''
-bench=df['bench'][:20]
-d=dict(zip(bench, range(20)))
-for key, val in d.items():
-    df=df.replace(to_replace=key, value=val)
+TO DO LIST:
+- transform the ET into (usec)
+- apply forward regression
+-  follow step-by-step the procedure on pdf
+- check if freq affects cpi
     '''
 def main(src, nbEx):
     header = [ 'Lc', 'Hz', 'SzL1d', 'SzL1i','SzL2', 'WsL1d', 'WsL1i','WsL2', 
