@@ -3,6 +3,16 @@
 Created on Tue Oct  6 15:00:37 2015
 
 @author: imanies
+
+add function
+
+def normRand():
+    n=np.random.normal(64, 32, 200)
+pl.hist(n, bins=100)
+for i in range(n.shape[0]):
+    l=abs(ws-n[i])
+    pos=g(l)
+    n[i]=ws[pos]
 """
 import xml.etree.ElementTree as ET
 import numpy as np
